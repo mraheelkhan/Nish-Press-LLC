@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\MagazineController;
+use App\Http\Controllers\FrontController;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -15,7 +16,7 @@ use App\Http\Controllers\MagazineController;
 */
 
 Route::get('/', function () {
-    return view('welcome');
+    return redirect()->route('login');
 });
 
 Auth::routes();
@@ -27,4 +28,8 @@ Route::middleware('auth')->group(function(){
     Route::resource('users', MagazineController::class);
 });;
 
+Route::prefix('front')->group(function(){
+    Route::get('/', [FrontController::class, 'index']);
+    Route::get('/{magazine}/{title}', [FrontController::class, 'show'])->name('front.magazine.show');
+});
 

@@ -2,8 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\MagazinePostRequest;
+use App\Http\Requests\MagazineUpdateRequest;
 use App\Models\Magazine;
 use Illuminate\Http\Request;
+use Storage;
 
 class MagazineController extends Controller
 {
@@ -25,7 +28,7 @@ class MagazineController extends Controller
      */
     public function create()
     {
-        //
+        return view('magazines.create');
     }
 
     /**
@@ -34,9 +37,35 @@ class MagazineController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(MagazinePostRequest $request)
     {
-        //
+        $cover_image_file = $request->file('cover_image');
+        $pdf_file = $request->file('pdf_filename');
+
+        $filename_cover_image = str_replace(" ","", time().$cover_image_file->getClientOriginalName());
+        $filename_pdf = str_replace(" ","", time().$pdf_file->getClientOriginalName());
+
+
+        Storage::putFileAs(
+            $filename_cover_image,
+            $cover_image_file,
+            $filename_cover_image
+        );
+
+        Storage::putFileAs(
+            'pdf_files/'.$filename_pdf,
+            $pdf_file,
+            $filename_pdf
+        );
+        $array = [
+            'pdf_filename' => $filename_pdf,
+            'cover_image' => $filename_cover_image
+        ];
+
+        $validatedData = array_merge($request->validated() ,$array);
+
+        Magazine::create($validatedData);
+        return redirect()->route('magazines.index')->withSuccess('Your magazine has been created');
     }
 
     /**
@@ -47,7 +76,7 @@ class MagazineController extends Controller
      */
     public function show(Magazine $magazine)
     {
-        //
+        abort(404);
     }
 
     /**
@@ -58,7 +87,7 @@ class MagazineController extends Controller
      */
     public function edit(Magazine $magazine)
     {
-        //
+        return view('magazines.edit', compact('magazine'));
     }
 
     /**
@@ -68,9 +97,35 @@ class MagazineController extends Controller
      * @param  \App\Models\Magazine  $magazine
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Magazine $magazine)
+    public function update(MagazineUpdateRequest $request, Magazine $magazine)
     {
-        //
+        $cover_image_file = $request->file('cover_image');
+        $pdf_file = $request->file('pdf_filename');
+
+        $filename_cover_image = str_replace(" ","", time().$cover_image_file->getClientOriginalName());
+        $filename_pdf = str_replace(" ","", time().$pdf_file->getClientOriginalName());
+
+
+        Storage::putFileAs(
+            $filename_cover_image,
+            $cover_image_file,
+            $filename_cover_image
+        );
+
+        Storage::putFileAs(
+            'pdf_files/'.$filename_pdf,
+            $pdf_file,
+            $filename_pdf
+        );
+        $array = [
+            'pdf_filename' => $filename_pdf,
+            'cover_image' => $filename_cover_image
+        ];
+
+        $validatedData = array_merge($request->validated() ,$array);
+        $magazine->update($validatedData);
+        return redirect()->route('magazines.index')
+                ->withSuccess('Magazine has successfully updated');
     }
 
     /**

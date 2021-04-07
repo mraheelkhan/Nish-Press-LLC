@@ -1,7 +1,13 @@
 @extends('layouts.app')
 
 @section('content')
+
    <div class="row">
+       @if(session()->has('success'))
+           <p class="alert alert-success">
+               {{ session('success') }}
+           </p>
+       @endif
        <div class="col-md-12">
            <div class="card">
                <div class="card-header">
@@ -25,16 +31,26 @@
                            </tr>
                            </thead>
                            <tbody>
+                           @foreach($magazines as $magazine)
                            <tr>
-                               <td>1</td>
-                               <td>Title of magazine</td>
-                               <td><img src="https://picsum.photos/100/200"/></td>
+                               <td>{{ $magazine->id }}</td>
+                               <td>{{ $magazine->title }}</td>
+                               <td class="w-50">
+                                   <img class="rounded shadow w-50"
+                                        src="{{ asset('storage/' . $magazine->cover_image . '/' . $magazine->cover_image ) }}"
+                                        alt="image"/>
+                               </td>
                                <td>$20</td>
-                               <td>
-                                   <a href="#" class="btn btn-sm btn-danger"><i class="fa fa-trash"></i> </a>
-                                   <a href="#" class="btn btn-sm btn-pink"><i class="fa fa-edit"></i> </a>
+                               <td class="w-25">
+                                   <a href="{{ route('magazines.edit', $magazine->id ) }}" class="btn btn-sm btn-pink">
+                                       <i class="fa fa-edit"></i>
+                                   </a>
+                                   <a href="#" class="btn btn-sm btn-danger">
+                                       <i class="fa fa-trash"></i>
+                                   </a>
                                </td>
                            </tr>
+                           @endforeach
                            </tbody>
                        </table>
                    </div>
