@@ -91,6 +91,7 @@
                                     <form action="{{ route('magazine.purchase') }}" method="post" id="payment-form"
                                           data-secret="{{ $intent->client_secret }}">
                                         @csrf
+                                        <input type="hidden" name="magazine_id" value="{{ $magazine->id }}">
                                         <div class="form-row mb-3">
                                             <input type="text" class="form-control" name="card-holder-name"
                                                    id="card-holder-name">
@@ -165,14 +166,21 @@
         form.addEventListener('submit', async function (event) {
             event.preventDefault();
 
-            const {setupIntent, error} = await stripe.confirmCardSetup(
+            const { paymentMethod, error } = await stripe.createPaymentMethod(
+                'card', card, {
+                    billing_details: { name: cardHolderName.value }
+                }
+            );
+
+            // for subscriptions
+            /* const {setupIntent, error} = await stripe.confirmCardSetup(
                 clientSecret, {
                     payment_method: {
                         card: card,
                         billing_details: {name: cardHolderName.value}
                     }
                 }
-            );
+            );*/
 
             if (error) {
                 // Inform the customer that there was an error.
@@ -180,8 +188,8 @@
                 errorElement.textContent = error.message;
             } else {
                 // Send the token to your server.
-                console.log(setupIntent);
-                stripeTokenHandler(setupIntent);
+                console.log(paymentMethod);
+                // stripeTokenHandler(paymentMethod);
             }
             /* stripe.createToken(card).then(function(result) {
                  if (result.error) {
@@ -195,13 +203,16 @@
              });*/
         });
 
-        function stripeTokenHandler(setupIntent) {
+        function stripeTokenHandler(paymentMethod) {
             // Insert the token ID into the form so it gets submitted to the server
             var form = document.getElementById('payment-form');
             var hiddenInput = document.createElement('input');
             hiddenInput.setAttribute('type', 'hidden');
-            hiddenInput.setAttribute('name', 'paymentMethod');
-            hiddenInput.setAttribute('value', setupIntent.payment_method);
+            // for subscription pass setupIntent.payment_method
+            /*hiddenInput.setAttribute('name', 'paymentMethod');
+            hiddenInput.setAttribute('value', setupIntent.payment_method);*/
+            hiddenInput.setAttribute('name', 'paymentMethodId');
+            hiddenInput.setAttribute('value', paymentMethod.id);
             form.appendChild(hiddenInput);
 
             // Submit the form

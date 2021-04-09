@@ -141,6 +141,16 @@ class MagazineController extends Controller
 
     public function purchase(Request $request)
     {
-        dd($request->all());
+//        dd($request->all());
+        $magazine = Magazine::findOrFail($request->magazine_id);
+        $magazine_price = $magazine->price;
+        $stripeCharge = $request->user()->charge(
+            $magazine_price, $request->paymentMethodId, [
+                'firstname' => auth()->user()->firstname,
+                'lastname' => auth()->user()->lastname,
+                'email' => auth()->user()->email
+            ]
+        );
+        return json_encode($stripeCharge);
     }
 }
