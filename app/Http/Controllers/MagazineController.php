@@ -138,4 +138,9 @@ class MagazineController extends Controller
     {
         //
     }
+
+    public function purchase(Request $request)
+    {
+        dd($request->all());
+    }
 }

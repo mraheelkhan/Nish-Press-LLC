@@ -26,6 +26,7 @@ Route::middleware('auth')->group(function(){
     Route::resource('/home', HomeController::class);
     Route::resource('magazines', MagazineController::class);
     Route::resource('users', MagazineController::class);
+    Route::post('magazine/purchase', [MagazineController::class, 'purchase'])->name('magazine.purchase');
 });;
 
 Route::prefix('front')->group(function(){

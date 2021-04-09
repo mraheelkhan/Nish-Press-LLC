@@ -15,6 +15,7 @@ class FrontController extends Controller
 
     public function show(Magazine $magazine, $title)
     {
-        return view('front.show', compact('magazine'));
+        $intent = auth()->user()->createSetupIntent();
+        return view('front.show', compact('magazine', 'intent'));
     }
 }
