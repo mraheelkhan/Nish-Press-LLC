@@ -29,8 +29,15 @@
 @section('content')
     <div class="row mt-5 mb-5">
         <div class="col-md-12">
-            <section class="panel">
-                <div class="panel-body">
+            <section class="card">
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="text-right">
+                                <a href="{{ route('front.index') }}" class="btn btn-pink">Back to List</a>
+                            </div>
+                        </div>
+                    </div>
                     <div class="row">
                         <div class="col-md-6">
                             <div class="pro-img-details">
@@ -77,40 +84,17 @@
                                 <label>Quantity</label>
                                 <input type="quantiy" placeholder="1" class="form-control quantity">
                             </div>--}}
-                            <p>
+
+                            <div class="mt-5 mb-3">
                                 <button class="btn btn-round btn-pink _df_button"
                                         id="pop_flip_button"
                                         source="{{ asset("storage/pdf_files/$magazine->pdf_filename/$magazine->pdf_filename") }}">
                                     View Magazine
                                 </button>
-
-                            </p>
-
-                            <div class="">
                                 @if($magazine->price)
-                                    <form action="{{ route('magazine.purchase') }}" method="post" id="payment-form"
-                                          data-secret="{{ $intent->client_secret }}">
-                                        @csrf
-                                        <input type="hidden" name="magazine_id" value="{{ $magazine->id }}">
-                                        <div class="form-row mb-3">
-                                            <input type="text" class="form-control" name="card-holder-name"
-                                                   id="card-holder-name">
-                                            <label for="card-element">
-                                                Credit or debit card
-                                            </label>
-                                            <div id="card-element" class="form-control">
-                                                <!-- A Stripe Element will be inserted here. -->
-                                            </div>
-
-                                            <!-- Used to display Element errors. -->
-                                            <div id="card-errors" role="alert"></div>
-                                        </div>
-
-                                        <button class="btn btn-round btn-pink" type="submit"><i
-                                                class="fa fa-shopping-cart"></i> Buy Now
-                                        </button>
-                                    </form>
-
+                                    <button type="button" class="btn btn-pink" data-toggle="modal" data-target="#buyMagazine">
+                                        Purchase Now
+                                    </button>
                                 @endif
                             </div>
                         </div>
@@ -120,6 +104,68 @@
             </section>
         </div>
     </div>
+
+    @if($magazine->price)
+    <div class="modal fade" id="buyMagazine" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLongTitle">Purchase {{ $magazine->title }}</h5>
+                   {{-- <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>--}}
+                </div>
+                <div class="modal-body">
+                    <div class="text-center">
+                        <img src="{{ asset('images/mastercard.png') }}"/>
+                        <img src="{{ asset('images/visa02.png') }}"/>
+                    </div>
+                    <form action="{{ route('magazine.purchase') }}" method="post" id="payment-form"
+                          data-secret="{{ $intent->client_secret }}">
+                        @csrf
+                        <input type="hidden" name="magazine_id" value="{{ $magazine->id }}">
+                        <input type="hidden" id="email" value="{{ auth()->user()->email }}">
+                        <input type="hidden" id="phone" value="{{ _('9221341312312') }}">
+                        <input type="hidden" id="city" value="{{ _('cityname') }}">
+                        <input type="hidden" id="country" value="{{ _('PK') }}">
+                        <input type="hidden" id="address_line1" value="{{ _('address_line1') }}">
+                        <div class="form mb-3">
+                            <p>4242424242424242</p>
+                            <div class="form-group">
+                            <label class="font-weight-bold">Name on card</label>
+                            <input type="text" class="form-control" name="card-holder-name"
+                                   id="card-holder-name" placeholder="Card holder name" required>
+
+                            </div>
+                            <div class="form-group">
+
+                            <label for="card-element" class="font-weight-bold">
+                                Credit or debit card
+                            </label>
+                            <div id="card-element" class="form-control">
+                                <!-- A Stripe Element will be inserted here. -->
+                            </div>
+                            </div>
+
+                            <!-- Used to display Element errors. -->
+                            <div id="card-errors" role="alert"></div>
+                        </div>
+
+                        <div class="text-center">
+                        <button class="btn btn-round btn-pink" type="submit"><i
+                                class="fa fa-credit-card"></i> Pay
+                        </button>
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+
+                </div>
+            </div>
+        </div>
+    </div>
+    @endif
 @endsection
 @push('script')
     <script>
@@ -162,13 +208,30 @@
         // Create a token or display an error when the form is submitted.
         var form = document.getElementById('payment-form');
         var cardHolderName = document.getElementById('card-holder-name');
+
+        var email = document.getElementById('email');
+        var phone = document.getElementById('phone');
+        var address_line1 = document.getElementById('address_line1');
+        var country = document.getElementById('country');
+        var city = document.getElementById('city');
+
         var clientSecret = form.dataset.secret;
         form.addEventListener('submit', async function (event) {
             event.preventDefault();
 
             const { paymentMethod, error } = await stripe.createPaymentMethod(
                 'card', card, {
-                    billing_details: { name: cardHolderName.value }
+                    billing_details: {
+                        address: {
+                            "city": city.value,
+                            "country": country.value,
+                            "line1": address_line1.value,
+                        },
+                        name: cardHolderName.value,
+                        email: email.value,
+                        phone: phone.value
+                    },
+
                 }
             );
 
@@ -189,7 +252,7 @@
             } else {
                 // Send the token to your server.
                 console.log(paymentMethod);
-                // stripeTokenHandler(paymentMethod);
+                stripeTokenHandler(paymentMethod);
             }
             /* stripe.createToken(card).then(function(result) {
                  if (result.error) {
@@ -213,8 +276,16 @@
             hiddenInput.setAttribute('value', setupIntent.payment_method);*/
             hiddenInput.setAttribute('name', 'paymentMethodId');
             hiddenInput.setAttribute('value', paymentMethod.id);
-            form.appendChild(hiddenInput);
 
+            var hiddenInputPay = document.createElement('input');
+            hiddenInputPay.setAttribute('type', 'hidden');
+            hiddenInputPay.setAttribute('id', 'paymentMethod');
+            hiddenInputPay.setAttribute('name', 'paymentMethod');
+            hiddenInputPay.setAttribute('value', JSON.stringify(paymentMethod));
+            form.appendChild(hiddenInput);
+            form.appendChild(hiddenInputPay);
+
+            console.log(document.getElementById('paymentMethod').value);
             // Submit the form
             form.submit();
         }

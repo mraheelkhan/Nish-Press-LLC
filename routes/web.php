@@ -27,10 +27,11 @@ Route::middleware('auth')->group(function(){
     Route::resource('magazines', MagazineController::class);
     Route::resource('users', MagazineController::class);
     Route::post('magazine/purchase', [MagazineController::class, 'purchase'])->name('magazine.purchase');
+    Route::get('/billing-portal', [HomeController::class, 'billing_portal'])->name('billing.portal');
 });;
 
 Route::prefix('front')->group(function(){
-    Route::get('/', [FrontController::class, 'index']);
+    Route::get('/', [FrontController::class, 'index'])->name('front.index');
     Route::get('/{magazine}/{title}', [FrontController::class, 'show'])->name('front.magazine.show');
 });
 

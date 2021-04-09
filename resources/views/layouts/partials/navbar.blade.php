@@ -13,6 +13,8 @@
 
         <li class="sidebar-list-item"><a href="{{ route('users.index') }}" class="sidebar-link text-muted {{ str_contains(Route::currentRouteName() , 'users') ? 'active' : '' }}"><i
                     class="fa fa-users mr-3 text-gray"></i><span>Users</span></a></li>
+        <li class="sidebar-list-item"><a href="{{ route('front.index') }}" class="sidebar-link text-muted {{ str_contains(Route::currentRouteName() , 'users') ? 'active' : '' }}"><i
+                    class="fa fa-eye mr-3 text-gray"></i><span>Public</span></a></li>
        {{-- <li class="sidebar-list-item"><a href="#" data-toggle="collapse" data-target="#pages" aria-expanded="false"
                                          aria-controls="pages" class="sidebar-link text-muted"><i
                     class="o-wireframe-1 mr-3 text-gray"></i><span>Pages</span></a>

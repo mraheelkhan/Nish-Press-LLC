@@ -24,6 +24,12 @@ class HomeController extends Controller
      */
     public function index()
     {
-        return view('home');
+        $stripeCustomer = auth()->user()->createOrGetStripeCustomer();
+        return view('home', compact('stripeCustomer'));
+    }
+
+    public function billing_portal(Request $request)
+    {
+        return $request->user()->redirectToBillingPortal(route('home.index'));
     }
 }
