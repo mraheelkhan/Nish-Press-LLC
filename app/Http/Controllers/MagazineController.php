@@ -2,12 +2,14 @@
 
 namespace App\Http\Controllers;
 
+use App\Core\HelperFunction;
 use App\Http\Requests\MagazinePostRequest;
 use App\Http\Requests\MagazineUpdateRequest;
 use App\Models\Magazine;
 use App\Models\Transaction;
 use Cartalyst\Stripe\Stripe;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Storage;
 
 class MagazineController extends Controller
@@ -145,40 +147,40 @@ class MagazineController extends Controller
     {
         $magazine = Magazine::findOrFail($request->magazine_id);
         $magazine_price = $magazine->price;
-        $paymentMethod = $request->paymentMethod;
-        $paymentMethod = json_decode($paymentMethod, true);
+        $class = FrontController::class;
+        $check = new $class();
 
-//        $request->user()->charge(
-//            $magazine_price, $request->paymentMethodId
-//        );
+        abort_if(HelperFunction::is_purchased($magazine->id), 401);
+
         $stripe = Stripe::make(env('STRIPE_SECRET'));
 
-
-        /* source attach method will link customer with card provided and can make payments later on */
-//        $stripe->sources()->attach(auth()->user()->asStripeCustomer()->id, $request->paymentMethodToken);
-        $charge = $stripe->charges()->create([
-            'source' => $request->paymentMethodToken,
-            'currency' => 'USD',
-            //'customer' => auth()->user()->asStripeCustomer()->id,
-            'amount'   => $magazine_price,
-        ]);
+        try {
+            $charge = $stripe->charges()->create([
+                'source' => $request->sourceId,
+                'currency' => 'USD',
+                'amount' => $magazine_price,
+            ]);
 
 
-        $transaction = Transaction::create([
-            'user_id' => auth()->user()->id,
-            'magazine_id' => $magazine->id,
-            'stripe_charge_id' => $charge['id'],
-            'stripe_object' => $charge['object'],
-            'stripe_balance_transaction' => $charge['balance_transaction'],
-            'stripe_billing_details' => json_encode($charge['billing_details']),
-            'stripe_payment_details' => json_encode($charge['source']),
-            'stripe_receipt_url' => json_encode($charge['receipt_url']),
-            'user_email' => $charge['billing_details']['email'],
-            'transaction_created_at' => $charge['created']
-        ]);
+            DB::beginTransaction();
+            $transaction = Transaction::create([
+                'user_id' => auth()->user()->id,
+                'magazine_id' => $magazine->id,
+                'stripe_charge_id' => $charge['id'],
+                'stripe_object' => $charge['object'],
+                'stripe_balance_transaction' => $charge['balance_transaction'],
+                'stripe_billing_details' => json_encode($charge['billing_details']),
+                'stripe_payment_details' => json_encode($charge['source']),
+                'stripe_receipt_url' => json_encode($charge['receipt_url']),
+                'user_email' => $charge['billing_details']['email'],
+                'transaction_created_at' => $charge['created']
+            ]);
+            DB::commit();
+        } catch (\Exception $e){
+            DB::rollBack();
+            return redirect()->back()->withError('Something went wrong');
+        }
 
         return $transaction;
-
-
     }
 }

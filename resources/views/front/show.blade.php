@@ -34,6 +34,11 @@
     <div class="row mt-5 mb-5">
         <div class="col-md-12">
             <section class="card">
+                @if(session()->has('error'))
+                    <p class="alert alert-danger">
+                        {{ session('error') }}
+                    </p>
+                @endif
                 <div class="card-body">
                     <div class="row">
                         <div class="col-md-12">
@@ -89,11 +94,19 @@
                             </div>--}}
 
                             <div class="mt-3 mb-3">
+                                @if(auth()->check() && \App\Core\HelperFunction::is_purchased($magazine->id))
                                 <button class="btn btn-round btn-pink _df_button"
                                         id="pop_flip_button"
                                         source="{{ asset("storage/pdf_files/$magazine->pdf_filename/$magazine->pdf_filename") }}">
-                                    Preview Magazine
+                                    View Magazine
                                 </button>
+                                @else
+                                    <button class="btn btn-round btn-pink _df_button"
+                                            id="pop_flip_button"
+                                            source="{{ asset("storage/pdf_files/$magazine->pdf_filename/$magazine->pdf_filename") }}">
+                                        Preview Magazine
+                                    </button>
+                                @endif
                                 @if($magazine->price)
                                     @if($purchased)
                                         Looks like already purchased, <a href="#" class="btn-link">Click here</a> to open magazine.
@@ -185,10 +198,8 @@
 
     <script>
         var stripe = Stripe("{{env('STRIPE_KEY')}}");
-
-
-        var stripe = Stripe("pk_test_51IbXaZAntaUCH1j1UGEuB2PbXQo52EVvYGp5qczDAw1jxcLH19JzXeC9Mx2OX2MLy0Z0Yx353FQRSzub2Z3a0PxO00hjdIdGvw");
         var elements = stripe.elements();
+
         // Custom styling can be passed to options when creating an Element.
         let style = {
             base: {
@@ -216,46 +227,15 @@
         var form = document.getElementById('payment-form');
         var cardHolderName = document.getElementById('card-holder-name');
 
-        var email = document.getElementById('email');
-        var phone = document.getElementById('phone');
-        var address_line1 = document.getElementById('address_line1');
-        var country = document.getElementById('country');
-        var city = document.getElementById('city');
+        var email = document.getElementById('email').value;
+        var phone = document.getElementById('phone').value;
+        var address_line1 = document.getElementById('address_line1').value;
+        var country = document.getElementById('country').value;
+        var city = document.getElementById('city').value;
 
         var clientSecret = form.dataset.secret;
         form.addEventListener('submit', async function (event) {
             event.preventDefault();
-
-            /*const { paymentMethod, error } = await stripe.createPaymentMethod(
-                'card', card, {
-                    billing_details: {
-                        address: {
-                            "city": city.value,
-                            "country": country.value,
-                            "line1": address_line1.value,
-                        },
-                        name: cardHolderName.value,
-                        email: email.value,
-                        phone: phone.value
-                    },
-
-                }
-            );*/
-
-            /*stripe.createToken(card, {
-                address_city: city.value,
-                address_country: country.value,
-                address_line1: address_line1.value,
-                name: cardHolderName.value,
-            }).then(function(result) {
-                // Handle result.error or result.token
-                if(result.error){
-                    var errorElement = document.getElementById('card-errors');
-                    errorElement.textContent = error.message;
-                } else {
-                    stripeTokenHandler(result)
-                }
-            });*/
 
             stripe.createSource(card, {
                     type: 'card',
@@ -280,58 +260,19 @@
                         stripeTokenHandler(result.source)
                     }
                 });
-
-
-
-            // for subscriptions
-            /* const {setupIntent, error} = await stripe.confirmCardSetup(
-                clientSecret, {
-                    payment_method: {
-                        card: card,
-                        billing_details: {name: cardHolderName.value}
-                    }
-                }
-            );*/
-
-            /*if (error) {
-                // Inform the customer that there was an error.
-                var errorElement = document.getElementById('card-errors');
-                errorElement.textContent = error.message;
-            } else {
-                // Send the token to your server.
-                console.log(paymentMethod);
-                stripeTokenHandler(paymentMethod);
-            }*/
-            /* stripe.createToken(card).then(function(result) {
-                 if (result.error) {
-                     // Inform the customer that there was an error.
-                     var errorElement = document.getElementById('card-errors');
-                     errorElement.textContent = result.error.message;
-                 } else {
-                     // Send the token to your server.
-                     stripeTokenHandler(result.token);
-                 }
-             });*/
         });
 
-        function stripeTokenHandler(paymentMethod) {
+        function stripeTokenHandler(source) {
             // Insert the token ID into the form so it gets submitted to the server
             var form = document.getElementById('payment-form');
+
+            // hidden input for source id created by stripe
             var hiddenInput = document.createElement('input');
             hiddenInput.setAttribute('type', 'hidden');
-            // for subscription pass setupIntent.payment_method
-            /*hiddenInput.setAttribute('name', 'paymentMethod');
-            hiddenInput.setAttribute('value', setupIntent.payment_method);*/
-            hiddenInput.setAttribute('name', 'paymentMethodToken');
-            hiddenInput.setAttribute('value', paymentMethod.id);
+            hiddenInput.setAttribute('name', 'sourceId');
+            hiddenInput.setAttribute('value', source.id);
 
-            var hiddenInputPay = document.createElement('input');
-            hiddenInputPay.setAttribute('type', 'hidden');
-            hiddenInputPay.setAttribute('id', 'paymentMethod');
-            hiddenInputPay.setAttribute('name', 'paymentMethod');
-            hiddenInputPay.setAttribute('value', JSON.stringify(paymentMethod));
             form.appendChild(hiddenInput);
-            form.appendChild(hiddenInputPay);
             // Submit the form
             form.submit();
         }
