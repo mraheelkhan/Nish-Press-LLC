@@ -21,6 +21,7 @@ class CreateMagazinesTable extends Migration
             $table->string('price')->nullable();
             $table->boolean('is_paid')->default(false);
             $table->string('pdf_filename')->nullable();
+            $table->string('paid_pdf_filename')->nullable();
             $table->string('link')->nullable();
             $table->foreignId('user_id')->references('id')->on('users');
             $table->boolean('is_active')->default(true);

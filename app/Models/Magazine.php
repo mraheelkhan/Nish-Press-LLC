@@ -10,6 +10,9 @@ class Magazine extends Model
     use HasFactory;
     protected $guarded = ['id'];
 
+    public function transactions(){
+        return $this->hasMany(Transaction::class);
+    }
     protected static function booted()
     {
 //        parent::boot();

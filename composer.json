@@ -12,7 +12,8 @@
         "laravel/cashier": "^12.11",
         "laravel/framework": "^8.12",
         "laravel/tinker": "^2.5",
-        "laravel/ui": "^3.2"
+        "laravel/ui": "^3.2",
+        "cartalyst/stripe-laravel": "^13.0"
     },
     "require-dev": {
         "facade/ignition": "^2.5",
@@ -57,5 +58,11 @@
         "sort-packages": true
     },
     "minimum-stability": "dev",
-    "prefer-stable": true
+    "prefer-stable": true,
+    "repositories": {
+        "cartalyst": {
+            "type": "composer",
+            "url": "https://packages.cartalyst.com"
+        }
+    }
 }

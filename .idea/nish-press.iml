@@ -125,6 +125,9 @@
       <excludeFolder url="file://$MODULE_DIR$/vendor/dompdf/dompdf" />
       <excludeFolder url="file://$MODULE_DIR$/vendor/moneyphp/money" />
       <excludeFolder url="file://$MODULE_DIR$/vendor/stripe/stripe-php" />
+      <excludeFolder url="file://$MODULE_DIR$/vendor/cartalyst/stripe-billing-laravel" />
+      <excludeFolder url="file://$MODULE_DIR$/vendor/cartalyst/stripe-laravel" />
+      <excludeFolder url="file://$MODULE_DIR$/vendor/cartalyst/stripe" />
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />

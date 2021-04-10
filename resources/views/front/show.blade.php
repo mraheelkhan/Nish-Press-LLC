@@ -24,6 +24,10 @@
         .StripeElement--webkit-autofill {
             background-color: #fefde5 !important;
         }
+        .pro-price {
+            font-size: 24px;
+            color: #f87ca3;
+        }
     </style>
 @endpush
 @section('content')
@@ -41,7 +45,7 @@
                     <div class="row">
                         <div class="col-md-6">
                             <div class="pro-img-details">
-                                <img class="rounded shadow"
+                                <img class="rounded shadow w-100"
                                      src="{{ asset("storage/$magazine->cover_image/$magazine->cover_image") }}" alt="">
                             </div>
                             {{--<div class="pro-img-list">
@@ -62,8 +66,6 @@
                         <div class="col-md-6">
                             <h4 class="pro-d-title">
                                 {{ ucwords($magazine->title) }}
-                                <a href="#" class="">
-                                </a>
                             </h4>
                             <p>
                                 {{ $magazine->description }}
@@ -76,6 +78,7 @@
                                 @if($magazine->price)
                                     <strong>Price : </strong>
                                     <span class="pro-price">{{ _('$') . $magazine->price }}</span>
+                                    <hr>
                                 @else
                                     <span>This Magazine is free</span>
                                 @endif
@@ -85,16 +88,20 @@
                                 <input type="quantiy" placeholder="1" class="form-control quantity">
                             </div>--}}
 
-                            <div class="mt-5 mb-3">
+                            <div class="mt-3 mb-3">
                                 <button class="btn btn-round btn-pink _df_button"
                                         id="pop_flip_button"
                                         source="{{ asset("storage/pdf_files/$magazine->pdf_filename/$magazine->pdf_filename") }}">
-                                    View Magazine
+                                    Preview Magazine
                                 </button>
                                 @if($magazine->price)
-                                    <button type="button" class="btn btn-pink" data-toggle="modal" data-target="#buyMagazine">
-                                        Purchase Now
-                                    </button>
+                                    @if($purchased)
+                                        Looks like already purchased, <a href="#" class="btn-link">Click here</a> to open magazine.
+                                    @else
+                                        <button type="button" class="btn btn-pink" data-toggle="modal" data-target="#buyMagazine">
+                                            Purchase Now
+                                        </button>
+                                    @endif
                                 @endif
                             </div>
                         </div>
@@ -153,7 +160,7 @@
 
                         <div class="text-center">
                         <button class="btn btn-round btn-pink" type="submit"><i
-                                class="fa fa-credit-card"></i> Pay
+                                class="fa fa-credit-card"></i> Pay ${{ $magazine->price }}
                         </button>
                         <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
                         </div>
@@ -219,7 +226,7 @@
         form.addEventListener('submit', async function (event) {
             event.preventDefault();
 
-            const { paymentMethod, error } = await stripe.createPaymentMethod(
+            /*const { paymentMethod, error } = await stripe.createPaymentMethod(
                 'card', card, {
                     billing_details: {
                         address: {
@@ -233,7 +240,48 @@
                     },
 
                 }
-            );
+            );*/
+
+            /*stripe.createToken(card, {
+                address_city: city.value,
+                address_country: country.value,
+                address_line1: address_line1.value,
+                name: cardHolderName.value,
+            }).then(function(result) {
+                // Handle result.error or result.token
+                if(result.error){
+                    var errorElement = document.getElementById('card-errors');
+                    errorElement.textContent = error.message;
+                } else {
+                    stripeTokenHandler(result)
+                }
+            });*/
+
+            stripe.createSource(card, {
+                    type: 'card',
+                    currency: 'usd',
+                    owner: {
+                        address: {
+                            "city": city.value,
+                            "country": country.value,
+                            "line1": address_line1.value,
+                        },
+                        name: cardHolderName.value,
+                        email: email.value,
+                        phone: phone.value
+                    },
+                })
+                .then(function(result) {
+                    if(result.error){
+                        var errorElement = document.getElementById('card-errors');
+                        errorElement.textContent = error.message;
+                    } else {
+                        console.log(result.source)
+                        stripeTokenHandler(result.source)
+                    }
+                });
+
+
 
             // for subscriptions
             /* const {setupIntent, error} = await stripe.confirmCardSetup(
@@ -245,7 +293,7 @@
                 }
             );*/
 
-            if (error) {
+            /*if (error) {
                 // Inform the customer that there was an error.
                 var errorElement = document.getElementById('card-errors');
                 errorElement.textContent = error.message;
@@ -253,7 +301,7 @@
                 // Send the token to your server.
                 console.log(paymentMethod);
                 stripeTokenHandler(paymentMethod);
-            }
+            }*/
             /* stripe.createToken(card).then(function(result) {
                  if (result.error) {
                      // Inform the customer that there was an error.
@@ -274,7 +322,7 @@
             // for subscription pass setupIntent.payment_method
             /*hiddenInput.setAttribute('name', 'paymentMethod');
             hiddenInput.setAttribute('value', setupIntent.payment_method);*/
-            hiddenInput.setAttribute('name', 'paymentMethodId');
+            hiddenInput.setAttribute('name', 'paymentMethodToken');
             hiddenInput.setAttribute('value', paymentMethod.id);
 
             var hiddenInputPay = document.createElement('input');
@@ -284,8 +332,6 @@
             hiddenInputPay.setAttribute('value', JSON.stringify(paymentMethod));
             form.appendChild(hiddenInput);
             form.appendChild(hiddenInputPay);
-
-            console.log(document.getElementById('paymentMethod').value);
             // Submit the form
             form.submit();
         }
