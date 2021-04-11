@@ -38,6 +38,7 @@ class HomeController extends Controller
 
     public function my_account(Request $request)
     {
+        $stripe_customer = auth()->user()->createOrGetStripeCustomer();
         $transactions = Transaction::with('user')->where('user_id', auth()->user()->id)->get();
 
         $trans_magazines = Transaction::where('user_id', auth()->user()->id)->pluck('magazine_id');
