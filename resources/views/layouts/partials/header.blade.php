@@ -3,7 +3,7 @@
         <a href="#" class="sidebar-toggler text-gray-500 mr-4 mr-lg-5 lead">
             <i class="fas fa-align-left"></i>
         </a>
-        <a href="index.html" class="navbar-brand font-weight-bold text-uppercase text-base">Nish
+        <a href="{{ route('home.index') }}" class="navbar-brand font-weight-bold text-uppercase text-base">Nish
             Press Dashboard
         </a>
         <ul class="ml-auto d-flex align-items-center list-unstyled mb-0">

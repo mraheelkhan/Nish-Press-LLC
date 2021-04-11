@@ -97,7 +97,7 @@
                                 @if(auth()->check() && \App\Core\HelperFunction::is_purchased($magazine->id))
                                 <button class="btn btn-round btn-pink _df_button"
                                         id="pop_flip_button"
-                                        source="{{ asset("storage/pdf_files/$magazine->pdf_filename/$magazine->pdf_filename") }}">
+                                        source="{{ asset("storage/paid_pdf_files/$magazine->paid_pdf_filename/$magazine->paid_pdf_filename") }}">
                                     View Magazine
                                 </button>
                                 @else
@@ -145,10 +145,10 @@
                         @csrf
                         <input type="hidden" name="magazine_id" value="{{ $magazine->id }}">
                         <input type="hidden" id="email" value="{{ auth()->user()->email }}">
-                        <input type="hidden" id="phone" value="{{ _('9221341312312') }}">
-                        <input type="hidden" id="city" value="{{ _('cityname') }}">
-                        <input type="hidden" id="country" value="{{ _('PK') }}">
-                        <input type="hidden" id="address_line1" value="{{ _('address_line1') }}">
+                        <input type="hidden" id="phone" value="{{ !empty(auth()->user()->phone) ? auth()->user()->phone : "01" }}">
+                        <input type="hidden" id="city" value="{{ auth()->user()->city }}">
+                        <input type="hidden" id="country" value="{{ auth()->user()->country }}">
+                        <input type="hidden" id="address_line1" value="{{ auth()->user()->address }}">
                         <div class="form mb-3">
                             <p>4242424242424242</p>
                             <div class="form-group">
@@ -242,19 +242,19 @@
                     currency: 'usd',
                     owner: {
                         address: {
-                            "city": city.value,
-                            "country": country.value,
-                            "line1": address_line1.value,
+                            "city": city,
+                            "country": country,
+                            "line1": address_line1,
                         },
-                        name: cardHolderName.value,
-                        email: email.value,
-                        phone: phone.value
+                        name: cardHolderName,
+                        email: email,
+                        phone: phone
                     },
                 })
                 .then(function(result) {
                     if(result.error){
                         var errorElement = document.getElementById('card-errors');
-                        errorElement.textContent = error.message;
+                        errorElement.textContent = result.error.message;
                     } else {
                         console.log(result.source)
                         stripeTokenHandler(result.source)

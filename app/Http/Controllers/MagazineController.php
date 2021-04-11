@@ -45,10 +45,11 @@ class MagazineController extends Controller
     {
         $cover_image_file = $request->file('cover_image');
         $pdf_file = $request->file('pdf_filename');
+        $paid_pdf_file = $request->file('paid_pdf_filename');
 
         $filename_cover_image = str_replace(" ", "", time() . $cover_image_file->getClientOriginalName());
         $filename_pdf = str_replace(" ", "", time() . $pdf_file->getClientOriginalName());
-
+        $paid_filename_pdf = str_replace(" ", "", time() . $paid_pdf_file->getClientOriginalName());
 
         Storage::putFileAs(
             $filename_cover_image,
@@ -61,9 +62,15 @@ class MagazineController extends Controller
             $pdf_file,
             $filename_pdf
         );
+        Storage::putFileAs(
+            'paid_pdf_files/' . $paid_filename_pdf,
+            $paid_pdf_file,
+            $paid_filename_pdf
+        );
         $array = [
             'pdf_filename' => $filename_pdf,
-            'cover_image' => $filename_cover_image
+            'cover_image' => $filename_cover_image,
+            'paid_pdf_filename' => $paid_filename_pdf
         ];
 
         $validatedData = array_merge($request->validated(), $array);
@@ -105,10 +112,11 @@ class MagazineController extends Controller
     {
         $cover_image_file = $request->file('cover_image');
         $pdf_file = $request->file('pdf_filename');
+        $paid_pdf_file = $request->file('paid_pdf_filename');
 
         $filename_cover_image = str_replace(" ", "", time() . $cover_image_file->getClientOriginalName());
         $filename_pdf = str_replace(" ", "", time() . $pdf_file->getClientOriginalName());
-
+        $paid_filename_pdf = str_replace(" ", "", time() . $paid_pdf_file->getClientOriginalName());
 
         Storage::putFileAs(
             $filename_cover_image,
@@ -121,9 +129,15 @@ class MagazineController extends Controller
             $pdf_file,
             $filename_pdf
         );
+        Storage::putFileAs(
+            'paid_pdf_files/' . $paid_filename_pdf,
+            $paid_pdf_file,
+            $paid_filename_pdf
+        );
         $array = [
             'pdf_filename' => $filename_pdf,
-            'cover_image' => $filename_cover_image
+            'cover_image' => $filename_cover_image,
+            'paid_pdf_filename' => $paid_filename_pdf
         ];
 
         $validatedData = array_merge($request->validated(), $array);
@@ -160,8 +174,6 @@ class MagazineController extends Controller
                 'currency' => 'USD',
                 'amount' => $magazine_price,
             ]);
-
-
             DB::beginTransaction();
             $transaction = Transaction::create([
                 'user_id' => auth()->user()->id,
@@ -169,8 +181,8 @@ class MagazineController extends Controller
                 'stripe_charge_id' => $charge['id'],
                 'stripe_object' => $charge['object'],
                 'stripe_balance_transaction' => $charge['balance_transaction'],
-                'stripe_billing_details' => json_encode($charge['billing_details']),
-                'stripe_payment_details' => json_encode($charge['source']),
+                'stripe_billing_details' => $charge['billing_details'],
+                'stripe_payment_details' => $charge['source'],
                 'stripe_receipt_url' => json_encode($charge['receipt_url']),
                 'user_email' => $charge['billing_details']['email'],
                 'transaction_created_at' => $charge['created']
@@ -178,9 +190,9 @@ class MagazineController extends Controller
             DB::commit();
         } catch (\Exception $e){
             DB::rollBack();
-            return redirect()->back()->withError('Something went wrong');
+            return redirect()->back()->withError('Something went wrong', $e);
         }
 
-        return $transaction;
+        return redirect()->route('my-account.index')->withSuccess('You have successfully purchased new magazine, charge #' . $transaction->stripe_charge_id);
     }
 }

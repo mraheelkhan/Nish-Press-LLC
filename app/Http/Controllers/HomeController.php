@@ -2,8 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Magazine;
+use App\Models\Transaction;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Gate;
 
 class HomeController extends Controller
 {
@@ -31,5 +34,14 @@ class HomeController extends Controller
     public function billing_portal(Request $request)
     {
         return $request->user()->redirectToBillingPortal(route('home.index'));
+    }
+
+    public function my_account(Request $request)
+    {
+        $transactions = Transaction::with('user')->where('user_id', auth()->user()->id)->get();
+
+        $trans_magazines = Transaction::where('user_id', auth()->user()->id)->pluck('magazine_id');
+        $magazines = Magazine::whereIn('id', $trans_magazines)->get();
+        return view('my-account.index', compact('transactions', 'magazines'));
     }
 }

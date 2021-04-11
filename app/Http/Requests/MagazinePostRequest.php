@@ -12,7 +12,8 @@ class MagazinePostRequest extends FormRequest
             'title' => 'required',
             'description' => 'required',
             'cover_image' => 'required|mimes:jpeg,jpg,png,gif',
-            'pdf_filename' => 'required|mimes:pdf|max:8448',
+            'pdf_filename' => 'required|mimes:pdf|max:100448',
+            'paid_pdf_filename' => 'nullable|mimes:pdf|max:100448',
             'price' => 'nullable|numeric'
         ];
     }

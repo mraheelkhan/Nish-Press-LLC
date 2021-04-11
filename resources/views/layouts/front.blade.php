@@ -38,7 +38,7 @@
                         <a class="nav-link" href="{{ route('front.index') }}">Home <span class="sr-only">(current)</span></a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="{{ route('front.index') }}">My Account</a>
+                        <a class="nav-link" href="{{ route('my-account.index') }}">My Account</a>
                     </li>
                 </ul>
             </div>

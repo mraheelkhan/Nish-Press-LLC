@@ -40,7 +40,7 @@
                                         src="{{ asset('storage/' . $magazine->cover_image . '/' . $magazine->cover_image ) }}"
                                         alt="image"/>
                                </td>
-                               <td>$20</td>
+                               <td>{{ $magazine->price ? _('$') . $magazine->price : 'Free' }}</td>
                                <td class="w-25">
                                    <a href="{{ route('magazines.edit', $magazine->id ) }}" class="btn btn-sm btn-pink">
                                        <i class="fa fa-edit"></i>

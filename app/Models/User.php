@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Cashier\Billable;
@@ -11,6 +12,7 @@ use Laravel\Cashier\Billable;
 class User extends Authenticatable
 {
     use HasFactory, Notifiable, Billable;
+    use SoftDeletes;
 
     /**
      * The attributes that are mass assignable.
@@ -49,5 +51,10 @@ class User extends Authenticatable
 
     public function magazines(){
         return $this->hasMany(Magazine::class);
+    }
+
+    public function getName()
+    {
+        return ucfirst($this->firstname) . ' ' . ucfirst($this->lastname);
     }
 }

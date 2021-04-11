@@ -14,7 +14,8 @@ class UserController extends Controller
      */
     public function index()
     {
-        $user = User::where('firstname')->get();
+        $users = User::all();
+        return view('users.index', compact('users'));
     }
 
     /**
@@ -55,9 +56,9 @@ class UserController extends Controller
      * @param $id
      * @return \Illuminate\Http\Response
      */
-    public function edit($id)
+    public function edit(User $user)
     {
-        //
+        return view('users.edit', compact('user'));
     }
 
     /**
@@ -69,7 +70,16 @@ class UserController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        $user = User::findOrFail($id);
+        $user->user_role = $request->user_role;
+        /*if($request->is_active == 'on')
+            $request->is_active = true;
+        else
+            $request->is_active = false;
+        $user->is_active = $request->is_active;*/
+        $user->save();
+
+        return redirect()->route('users.index')->withSuccess('User role updated successfully');
     }
 
     /**
@@ -81,5 +91,12 @@ class UserController extends Controller
     public function destroy($id)
     {
         //
+    }
+
+    public function delete($id)
+    {
+        $user = User::findOrFail($id);
+        $user->delete();
+        return redirect()->route('users.index')->withSuccess('User has been deleted and cannot recreate new account using same email address.');
     }
 }
