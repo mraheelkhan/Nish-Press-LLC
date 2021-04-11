@@ -195,4 +195,12 @@ class MagazineController extends Controller
 
         return redirect()->route('my-account.index')->withSuccess('You have successfully purchased new magazine, charge #' . $transaction->stripe_charge_id);
     }
+
+
+    public function delete($id)
+    {
+        $magazine = Magazine::findOrFail($id);
+        $magazine->delete();
+        return redirect()->route('magazines.index')->withSuccess('Magazine has been deleted successfully.');
+    }
 }

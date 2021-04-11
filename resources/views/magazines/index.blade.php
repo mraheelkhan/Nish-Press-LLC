@@ -33,7 +33,7 @@
                            <tbody>
                            @foreach($magazines as $magazine)
                            <tr>
-                               <td>{{ $magazine->id }}</td>
+                               <td>{{ $loop->iteration }}</td>
                                <td>{{ $magazine->title }}</td>
                                <td class="w-50">
                                    <img class="rounded shadow w-50"
@@ -45,7 +45,7 @@
                                    <a href="{{ route('magazines.edit', $magazine->id ) }}" class="btn btn-sm btn-pink">
                                        <i class="fa fa-edit"></i>
                                    </a>
-                                   <a href="#" class="btn btn-sm btn-danger">
+                                   <a href="{{ route('magazine.delete', $magazine->id) }}" class="btn btn-sm btn-danger">
                                        <i class="fa fa-trash"></i>
                                    </a>
                                </td>

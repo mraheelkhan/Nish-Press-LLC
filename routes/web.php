@@ -29,6 +29,7 @@ Route::middleware('auth')->group(function(){
     Route::resource('magazines', MagazineController::class);
     Route::resource('users', UserController::class)->middleware('can:is_admin');
     Route::get('users/delete/{id}', [UserController::class, 'delete'])->middleware('can:is_admin')->name('users.delete');
+    Route::get('magazine/delete/{id}', [MagazineController::class, 'delete'])->middleware('can:is_admin')->name('magazine.delete');
     Route::post('magazine/purchase', [MagazineController::class, 'purchase'])->name('magazine.purchase');
     Route::get('/billing-portal', [HomeController::class, 'billing_portal'])->name('billing.portal');
 });;
