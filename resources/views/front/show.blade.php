@@ -150,7 +150,7 @@
                         <input type="hidden" id="country" value="{{ auth()->user()->country }}">
                         <input type="hidden" id="address_line1" value="{{ auth()->user()->address }}">
                         <div class="form mb-3">
-                            <p>4242424242424242</p>
+
                             <div class="form-group">
                             <label class="font-weight-bold">Name on card</label>
                             <input type="text" class="form-control" name="card-holder-name"
