@@ -166,6 +166,7 @@ return [
          * Package Service Providers...
          */
         Cartalyst\Stripe\Laravel\StripeServiceProvider::class,
+        Srmklive\PayPal\Providers\PayPalServiceProvider::class,
         /*
          * Application Service Providers...
          */
@@ -230,7 +231,7 @@ return [
 
         /* user packages */
         'Stripe' => Cartalyst\Stripe\Laravel\Facades\Stripe::class,
-
+        'PayPal' => Srmklive\PayPal\Facades\PayPal::class,
     ],
 
 ];

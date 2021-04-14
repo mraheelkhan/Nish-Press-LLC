@@ -152,6 +152,10 @@
                         <div class="form mb-3">
 
                             <div class="form-group">
+                                <label>Pay with Paypal</label>
+                                <a href="{{ route('paypal.payment', ['magazine_id' => $magazine->id]) }}" class="btn btn-success">Pay {{$magazine->price}} with Paypal</a>
+                            </div>
+                            <div class="form-group">
                             <label class="font-weight-bold">Name on card</label>
                             <input type="text" class="form-control" name="card-holder-name"
                                    id="card-holder-name" placeholder="Card holder name" required>

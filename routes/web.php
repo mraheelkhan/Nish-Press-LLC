@@ -32,6 +32,10 @@ Route::middleware('auth')->group(function(){
     Route::get('magazine/delete/{id}', [MagazineController::class, 'delete'])->middleware('can:is_admin')->name('magazine.delete');
     Route::post('magazine/purchase', [MagazineController::class, 'purchase'])->name('magazine.purchase');
     Route::get('/billing-portal', [HomeController::class, 'billing_portal'])->name('billing.portal');
+
+    Route::get('payment', [App\Http\Controllers\MagazineController::class, 'paymentPaypal'])->name('paypal.payment');
+    Route::get('payment/success',  [App\Http\Controllers\MagazineController::class, 'paypalSuccess'])->name('paypal.success');
+    Route::get('cancel',  [App\Http\Controllers\MagazineController::class, 'paypalCancel'])->name('paypal.cancel');
 });;
 
 Route::prefix('front')->group(function(){

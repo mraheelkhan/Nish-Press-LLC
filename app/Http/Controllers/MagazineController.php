@@ -10,10 +10,20 @@ use App\Models\Transaction;
 use Cartalyst\Stripe\Stripe;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Srmklive\PayPal\Services\ExpressCheckout;
 use Storage;
 
 class MagazineController extends Controller
 {
+
+    protected $provider;
+    /**
+     * constructor
+     */
+    public function __construct(){
+        $this->provider = new ExpressCheckout();
+    }
+
     /**
      * Display a listing of the resource.
      *
@@ -165,7 +175,6 @@ class MagazineController extends Controller
         $check = new $class();
 
         abort_if(HelperFunction::is_purchased($magazine->id), 401);
-
         $stripe = Stripe::make(env('STRIPE_SECRET'));
 
         try {
@@ -202,5 +211,42 @@ class MagazineController extends Controller
         $magazine = Magazine::findOrFail($id);
         $magazine->delete();
         return redirect()->route('magazines.index')->withSuccess('Magazine has been deleted successfully.');
+    }
+
+    public function paymentPaypal(Request $request) {
+
+        $magazine = Magazine::findOrFail($request->magazine_id);
+        $magazine_price = $magazine->price;
+        $data = [];
+        $data['items'] = [
+            [
+                'name' => $magazine->title,
+                'price' => $magazine_price,
+                'desc' => 'Purchasing Nish Press magazine.',
+                'qty' => 1
+            ]
+        ];
+
+        $data['invoice_id'] = Transaction::count() + 1;
+        $data['invoice_description'] = "Your order #{$data['invoice_id']} for {$magazine->title}";
+        $data['return_url'] = route('paypal.success');
+        $data['cancel_url'] = route('paypal.cancel');
+        $data['total'] = $magazine_price;
+
+        $provider = $this->provider;
+        $response = $provider->setExpressCheckout($data);
+        $response = $provider->setExpressCheckout($data, true);
+        return redirect($response['paypal_link']);
+    }
+    public function paypalSuccess(Request $request) {
+        $provider = $this->provider;
+        $response = $provider->getExpressCheckoutDetails($request->token);
+        if (in_array(strtoupper($response['ACK']), ['SUCCESS', 'SUCCESSWITHWARNING'])) {
+            return $response;
+        }
+        dd('Something is wrong.');
+    }
+    public function paypalCancel() {
+        return "order cancel paypal";
     }
 }
