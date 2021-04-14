@@ -29,7 +29,7 @@
                                     Enter magazine title
                                 </label>
                                 <input type="text" class="form-control" name="title" id="title"
-                                       value="{{ old('title') }}"/>
+                                       value="{{ old('title') }}" required/>
                                 @error('title')
                                 <div class="alert alert-danger">{{ $message }}</div>
                                 @enderror
@@ -50,7 +50,7 @@
                                     Enter magazine description
                                 </label>
                                 <textarea class="form-control" name="description"
-                                          id="description">{{ old('description') }}</textarea>
+                                          id="description"  required>{{ old('description') }}</textarea>
                                 @error('description')
                                 <div class="alert alert-danger">{{ $message }}</div>
                                 @enderror
@@ -62,17 +62,17 @@
                                     Upload Cover Image
                                 </label>
                                 <input type="file" name="cover_image" id="cover_image"
-                                       value="{{ old('cover_image') }}"/>
+                                       value="{{ old('cover_image') }}"  required/>
                                 @error('cover_image')
                                 <div class="alert alert-danger">{{ $message }}</div>
                                 @enderror
                             </div>
                             <div class="col-md-4">
                                 <label>
-                                    Upload magazine PDF
+                                    Upload free magazine PDF
                                 </label>
                                 <input type="file" name="pdf_filename" id="pdf_filename"
-                                       value="{{ old('pdf_filename') }}"/>
+                                       value="{{ old('pdf_filename') }}"  required/>
                                 @error('pdf_filename')
                                 <div class="alert alert-danger">{{ $message }}</div>
                                 @enderror

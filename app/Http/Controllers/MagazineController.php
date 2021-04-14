@@ -55,12 +55,10 @@ class MagazineController extends Controller
     {
         $cover_image_file = $request->file('cover_image');
         $pdf_file = $request->file('pdf_filename');
-        $paid_pdf_file = $request->file('paid_pdf_filename');
 
         $filename_cover_image = str_replace(" ", "", time() . $cover_image_file->getClientOriginalName());
         $filename_pdf = str_replace(" ", "", time() . $pdf_file->getClientOriginalName());
-        $paid_filename_pdf = str_replace(" ", "", time() . $paid_pdf_file->getClientOriginalName());
-
+        $paid_filename_pdf = null;
         Storage::putFileAs(
             $filename_cover_image,
             $cover_image_file,
@@ -72,15 +70,20 @@ class MagazineController extends Controller
             $pdf_file,
             $filename_pdf
         );
-        Storage::putFileAs(
-            'paid_pdf_files/' . $paid_filename_pdf,
-            $paid_pdf_file,
-            $paid_filename_pdf
-        );
+        if($request->hasFile('paid_pdf_filename')){
+            $paid_pdf_file = $request->file('paid_pdf_filename');
+            $paid_filename_pdf = str_replace(" ", "", time() . $paid_pdf_file->getClientOriginalName());
+            Storage::putFileAs(
+                'paid_pdf_files/' . $paid_filename_pdf,
+                $paid_pdf_file,
+                $paid_filename_pdf
+            );
+        }
+
         $array = [
             'pdf_filename' => $filename_pdf,
             'cover_image' => $filename_cover_image,
-            'paid_pdf_filename' => $paid_filename_pdf
+            'paid_pdf_filename' => is_null($paid_filename_pdf) ? null : $paid_filename_pdf
         ];
 
         $validatedData = array_merge($request->validated(), $array);
@@ -122,12 +125,10 @@ class MagazineController extends Controller
     {
         $cover_image_file = $request->file('cover_image');
         $pdf_file = $request->file('pdf_filename');
-        $paid_pdf_file = $request->file('paid_pdf_filename');
 
         $filename_cover_image = str_replace(" ", "", time() . $cover_image_file->getClientOriginalName());
         $filename_pdf = str_replace(" ", "", time() . $pdf_file->getClientOriginalName());
-        $paid_filename_pdf = str_replace(" ", "", time() . $paid_pdf_file->getClientOriginalName());
-
+        $paid_filename_pdf = null;
         Storage::putFileAs(
             $filename_cover_image,
             $cover_image_file,
@@ -139,15 +140,20 @@ class MagazineController extends Controller
             $pdf_file,
             $filename_pdf
         );
-        Storage::putFileAs(
-            'paid_pdf_files/' . $paid_filename_pdf,
-            $paid_pdf_file,
-            $paid_filename_pdf
-        );
+        if($request->hasFile('paid_pdf_filename')){
+            $paid_pdf_file = $request->file('paid_pdf_filename');
+            $paid_filename_pdf = str_replace(" ", "", time() . $paid_pdf_file->getClientOriginalName());
+            Storage::putFileAs(
+                'paid_pdf_files/' . $paid_filename_pdf,
+                $paid_pdf_file,
+                $paid_filename_pdf
+            );
+        }
+
         $array = [
             'pdf_filename' => $filename_pdf,
             'cover_image' => $filename_cover_image,
-            'paid_pdf_filename' => $paid_filename_pdf
+            'paid_pdf_filename' => is_null($paid_filename_pdf) ? null : $paid_filename_pdf
         ];
 
         $validatedData = array_merge($request->validated(), $array);
