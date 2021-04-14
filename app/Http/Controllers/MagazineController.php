@@ -235,7 +235,7 @@ class MagazineController extends Controller
 
         $data['invoice_id'] = Transaction::count() + 1;
         $data['invoice_description'] = "Your order #{$data['invoice_id']} for {$magazine->title}";
-        $data['return_url'] = route('paypal.success');
+        $data['return_url'] = route('paypal.success', ['magazine_id' => $magazine->id]);
         $data['cancel_url'] = route('paypal.cancel');
         $data['total'] = $magazine_price;
 
@@ -248,7 +248,38 @@ class MagazineController extends Controller
         $provider = $this->provider;
         $response = $provider->getExpressCheckoutDetails($request->token);
         if (in_array(strtoupper($response['ACK']), ['SUCCESS', 'SUCCESSWITHWARNING'])) {
-            return $response;
+
+            $transaction = Transaction::create([
+                'user_id' => auth()->user()->id,
+                'magazine_id' => $request->magazine_id,
+                'stripe_charge_id' => $response['TOKEN'],
+                'stripe_object' => 'paypal',
+                'stripe_balance_transaction' => 'paypal',
+                'stripe_billing_details' => [
+                    'EMAIL' => $response['EMAIL'],
+                    'PAYERID' => $response['PAYERID'],
+                    'FIRSTNAME' => $response['FIRSTNAME'],
+                    'LASTNAME' => $response['LASTNAME'],
+                    'COUNTRYCODE' => $response['COUNTRYCODE'],
+                    'ACK' => $response['ACK'],
+                    'CORRELATIONID' => $response['CORRELATIONID'],
+                ],
+                'stripe_payment_details' => [
+                    'EMAIL' => $response['EMAIL'],
+                    'PAYERID' => $response['PAYERID'],
+                    'FIRSTNAME' => $response['FIRSTNAME'],
+                    'LASTNAME' => $response['LASTNAME'],
+                    'COUNTRYCODE' => $response['COUNTRYCODE'],
+                    'ACK' => $response['ACK'],
+                    'CORRELATIONID' => $response['CORRELATIONID'],
+                ],
+                'stripe_receipt_url' => "nish.press/paypal",
+                'user_email' => $response['EMAIL'],
+                'transaction_created_at' => $response['TIMESTAMP']
+            ]);
+
+            return redirect()->route('my-account.index')->withSuccess('You have successfully purchased new magazine, charge #' . $transaction->stripe_charge_id);
+
         }
         dd('Something is wrong.');
     }

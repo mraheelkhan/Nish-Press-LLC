@@ -53,9 +53,9 @@
                             @foreach($transactions as $record)
                                 <tr>
                                     <td>{{ $record->stripe_charge_id }}</td>
-                                    <td>{{ $record->stripe_payment_details['card']['last4'] }}</td>
+                                    <td>{{ (strtolower($record->stripe_object) == 'paypal') ? $record->stripe_object : $record->stripe_payment_details['card']['last4'] }}</td>
                                     <td>{{ $record->magazine->title }}</td>
-                                    <td>{{ date('M d Y h:i a', $record->transaction_created_at) }}</td>
+                                    <td>{{(strtolower($record->stripe_object) == 'paypal') ? date('M d Y h:i a', strtotime($record->transaction_created_at)) : date('M d Y h:i a', $record->transaction_created_at) }}</td>
                                 </tr>
                             @endforeach
                             </tbody>
