@@ -281,9 +281,9 @@ class MagazineController extends Controller
             return redirect()->route('my-account.index')->withSuccess('You have successfully purchased new magazine, charge #' . $transaction->stripe_charge_id);
 
         }
-        dd('Something is wrong.');
+        return redirect()->route('my-account.index')->withError('Something went wrong.');
     }
     public function paypalCancel() {
-        return "order cancel paypal";
+        return redirect()->route('my-account.index')->withError('Your order is cancelled.');
     }
 }

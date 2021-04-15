@@ -8,6 +8,11 @@
                 {{ session('success') }}
             </p>
         @endif
+            @if(session()->has('error'))
+                <p class="alert alert-error">
+                    {{ session('error') }}
+                </p>
+            @endif
         <div class="col-md-12">
             <div class="card">
                 <div class="card-header">
