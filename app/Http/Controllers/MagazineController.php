@@ -6,7 +6,9 @@ use App\Core\HelperFunction;
 use App\Http\Requests\MagazinePostRequest;
 use App\Http\Requests\MagazineUpdateRequest;
 use App\Models\Magazine;
+use App\Models\PremiumAccess;
 use App\Models\Transaction;
+use App\Models\User;
 use Cartalyst\Stripe\Stripe;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -111,7 +113,9 @@ class MagazineController extends Controller
      */
     public function edit(Magazine $magazine)
     {
-        return view('magazines.edit', compact('magazine'));
+        $users = User::where('user_role', 'premium')->get();
+        $premium_users = PremiumAccess::with('premium_user')->where('magazine_id', $magazine->id)->get();
+        return view('magazines.edit', compact('magazine', 'users', 'premium_users'));
     }
 
     /**
@@ -285,5 +289,17 @@ class MagazineController extends Controller
     }
     public function paypalCancel() {
         return redirect()->route('my-account.index')->withError('Your order is cancelled.');
+    }
+
+    public function premiumAccess(Request $request)
+    {
+        abort_if(PremiumAccess::where('user_id', $request->user_id)->where('magazine_id', $request->magazine_id)->exists(), 403);
+        PremiumAccess::create($request->all());
+        return redirect()->back()->withSuccess('Premium user has successfully added to magazine');
+    }
+    public function premiumAccessRemove(PremiumAccess $premiumAccess, Request $request)
+    {
+        $premiumAccess->delete();
+        return redirect()->back()->withSuccess('Premium user has successfully deleted to magazine');
     }
 }

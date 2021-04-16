@@ -11,6 +11,6 @@ class ApiController extends Controller
     public function magazines()
     {
 
-        return (new MagazineResourceCollection(Magazine::all()));
+        return (new MagazineResourceCollection(Magazine::orderByDesc('id')->get()));
     }
 }

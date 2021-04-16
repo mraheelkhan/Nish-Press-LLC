@@ -36,6 +36,10 @@ Route::middleware('auth')->group(function(){
     Route::get('payment', [App\Http\Controllers\MagazineController::class, 'paymentPaypal'])->name('paypal.payment');
     Route::get('payment/success',  [App\Http\Controllers\MagazineController::class, 'paypalSuccess'])->name('paypal.success');
     Route::get('cancel',  [App\Http\Controllers\MagazineController::class, 'paypalCancel'])->name('paypal.cancel');
+
+    /* premium access to premium users */
+    Route::get('/magazine/premium-access', [MagazineController::class, 'premiumAccess'])->name('magazine.premiumAccess');
+    Route::get('/magazine/premium-access/{premium_access}', [MagazineController::class, 'premiumAccessRemove'])->name('magazine.premiumAccessRemove');
 });;
 
 Route::prefix('front')->group(function(){

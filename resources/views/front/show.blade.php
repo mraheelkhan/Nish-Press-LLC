@@ -94,26 +94,36 @@
                             </div>--}}
 
                             <div class="mt-3 mb-3">
-                                @if(auth()->check() && \App\Core\HelperFunction::is_purchased($magazine->id))
-                                <button class="btn btn-round btn-pink _df_button"
-                                        id="pop_flip_button"
-                                        source="{{ asset("storage/paid_pdf_files/$magazine->paid_pdf_filename/$magazine->paid_pdf_filename") }}">
-                                    View Magazine
-                                </button>
-                                @else
+                                @if(auth()->check() && \App\Core\HelperFunction::is_premium_access($magazine->id, auth()->user()->id))
+                                    <div class="alert alert-success">We grant you free access to this magazine, Enjoy!</div>
                                     <button class="btn btn-round btn-pink _df_button"
                                             id="pop_flip_button"
-                                            source="{{ asset("storage/pdf_files/$magazine->pdf_filename/$magazine->pdf_filename") }}">
-                                        Preview Magazine
+                                            source="{{ asset("storage/paid_pdf_files/$magazine->paid_pdf_filename/$magazine->paid_pdf_filename") }}">
+                                        View Magazine
                                     </button>
-                                @endif
-                                @if($magazine->price)
-                                    @if($purchased)
-                                        Looks like already purchased, <a href="#" class="btn-link">Click here</a> to open magazine.
+                                @else
+
+                                    @if(auth()->check() && \App\Core\HelperFunction::is_purchased($magazine->id))
+                                    <button class="btn btn-round btn-pink _df_button"
+                                            id="pop_flip_button"
+                                            source="{{ asset("storage/paid_pdf_files/$magazine->paid_pdf_filename/$magazine->paid_pdf_filename") }}">
+                                        View Magazine
+                                    </button>
                                     @else
-                                        <button type="button" class="btn btn-pink" data-toggle="modal" data-target="#buyMagazine">
-                                            Purchase Now
+                                        <button class="btn btn-round btn-pink _df_button"
+                                                id="pop_flip_button"
+                                                source="{{ asset("storage/pdf_files/$magazine->pdf_filename/$magazine->pdf_filename") }}">
+                                            Preview Magazine
                                         </button>
+                                    @endif
+                                    @if($magazine->price)
+                                        @if($purchased)
+                                            Looks like already purchased, <a href="#" class="btn-link">Click button</a> to open magazine.
+                                        @else
+                                            <button type="button" class="btn btn-pink" data-toggle="modal" data-target="#buyMagazine">
+                                                Purchase Now
+                                            </button>
+                                        @endif
                                     @endif
                                 @endif
                             </div>
@@ -194,7 +204,7 @@
     </div>
     @endif
     @if($magazine->price)
-    @if(!$purchased)
+    @if(!$purchased && !\App\Core\HelperFunction::is_premium_access($magazine->id, auth()->user()->id))
     <div class="modal fade" style="z-index: 999990;" id="purchaseModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered" role="document">
             <div class="modal-content">

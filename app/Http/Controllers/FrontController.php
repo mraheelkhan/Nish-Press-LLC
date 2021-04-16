@@ -13,7 +13,7 @@ class FrontController extends Controller
 {
     public function index()
     {
-        $magazines = Magazine::where('is_active', true)->get();
+        $magazines = Magazine::where('is_active', true)->orderBy('id', 'desc')->get();
         return view('front.magazines', compact('magazines'));
     }
 
