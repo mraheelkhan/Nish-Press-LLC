@@ -14,7 +14,7 @@
     <link href="https://fonts.googleapis.com/css?family=Nunito" rel="stylesheet">
 
     <!-- Styles -->
-    <link href="{{ asset('css/app.css') }}" rel="stylesheet">
+    <link href="{{ asset('css/app.css?v='.filemtime(public_path('css/app.css'))) }}" rel="stylesheet">
     <link href="{{ asset('css/dflip.min.css') }}" rel="stylesheet">
     <link href="{{ asset('css/themify-icons.min.css') }}" rel="stylesheet">
     <!-- Font Awesome CSS-->
