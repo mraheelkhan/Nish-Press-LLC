@@ -126,7 +126,7 @@
     </div>
 
     @if($magazine->price)
-    <div class="modal fade" id="buyMagazine" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+    <div class="modal fade" style="z-index: 999991;"  id="buyMagazine" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered" role="document">
             <div class="modal-content">
                 <div class="modal-header">
@@ -193,6 +193,31 @@
         </div>
     </div>
     @endif
+    @if($magazine->price)
+    @if(!$purchased)
+    <div class="modal fade" style="z-index: 999990;" id="purchaseModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLongTitle">Purchase Paid Version</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    It's look like you are viewing free version of magazine. please proceed to buy the full version.
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-pink" data-toggle="modal" data-target="#buyMagazine">
+                        Purchase Now
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    @endif
+    @endif
 @endsection
 @push('script')
     <script>
@@ -200,6 +225,17 @@
             // enableDownload of PDF files (true|false)
             enableDownload: false,
         }
+        //for flip
+        jQuery(function() {
+
+            DFLIP.defaults.onFlip = function(flipbook) {
+                if(flipbook.target._activePage == flipbook.target.endPage){
+                    $('#purchaseModal').modal('show')
+                }
+            }
+
+        });
+
     </script>
     <script src="https://js.stripe.com/v3/"></script>
 
@@ -284,6 +320,5 @@
             form.submit();
         }
     </script>
-
 @endpush
 

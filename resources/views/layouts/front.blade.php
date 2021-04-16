@@ -17,7 +17,6 @@
     <link href="{{ asset('css/app.css') }}" rel="stylesheet">
     <link href="{{ asset('css/dflip.min.css') }}" rel="stylesheet">
     <link href="{{ asset('css/themify-icons.min.css') }}" rel="stylesheet">
-
     <!-- Font Awesome CSS-->
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.3.1/css/all.css"
           integrity="sha384-mzrmE5qonljUremFsqc01SB46JvROS7bZs3IO2EmfFsd15uHvIt+Y8vEf7N7fWAU" crossorigin="anonymous">
@@ -47,8 +46,9 @@
     </div>
 </div>
 <!-- Scripts -->
-<script src="{{ asset('js/app.js') }}" defer></script>
-<script src="{{ asset('js/dflip.min.js') }}" defer></script>
+<script src="{{ asset('js/app.js') }}"></script>
+
+<script src="{{ asset('js/dflip.min.js') }}"></script>
 @stack('script')
 </body>
 </html>
