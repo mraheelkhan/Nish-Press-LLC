@@ -26,7 +26,11 @@
                                          class="sidebar-link text-muted {{ str_contains(Route::currentRouteName() , 'my-account') ? 'active' : '' }}"><i
                     class="fa fa-user mr-3 text-gray"></i><span>My Account</span></a></li>
 
-
+        @can('is_admin')
+            <li class="sidebar-list-item"><a href="{{ route('account.all_transactions') }}"
+                                             class="sidebar-link text-muted {{ str_contains(Route::currentRouteName() , 'all_transactions') ? 'active' : '' }}"><i
+                        class="fa fa-money-bill mr-3 text-gray"></i><span>All Transactions</span></a></li>
+        @endcan
         {{-- <li class="sidebar-list-item"><a href="#" data-toggle="collapse" data-target="#pages" aria-expanded="false"
                                           aria-controls="pages" class="sidebar-link text-muted"><i
                      class="o-wireframe-1 mr-3 text-gray"></i><span>Pages</span></a>

@@ -7,6 +7,7 @@ use App\Models\Transaction;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Gate;
+use Illuminate\Pagination\Paginator;
 
 class HomeController extends Controller
 {
@@ -17,7 +18,7 @@ class HomeController extends Controller
      */
     public function __construct()
     {
-        $this->middleware('auth');
+        $this->middleware(['auth','verified']);
     }
 
     /**
@@ -44,5 +45,12 @@ class HomeController extends Controller
         $trans_magazines = Transaction::where('user_id', auth()->user()->id)->pluck('magazine_id');
         $magazines = Magazine::whereIn('id', $trans_magazines)->get();
         return view('my-account.index', compact('transactions', 'magazines'));
+    }
+
+    public function transactions()
+    {
+        Paginator::useBootstrap();
+        $transactions = Transaction::with('user')->orderByDesc('id')->paginate(20);
+        return view('my-account.all-transactions', compact('transactions'));
     }
 }

@@ -212,7 +212,7 @@ class MagazineController extends Controller
             return redirect()->back()->withError('Something went wrong', $e);
         }
 
-        return redirect()->route('my-account.index')->withSuccess('You have successfully purchased new magazine, charge #' . $transaction->stripe_charge_id);
+        return redirect()->route('my-account.index')->withSuccess('You have successfully purchased ' .$magazine->title .' magazine, charge #' . $transaction->stripe_charge_id);
     }
 
 
@@ -282,7 +282,7 @@ class MagazineController extends Controller
                 'transaction_created_at' => $response['TIMESTAMP']
             ]);
 
-            return redirect()->route('my-account.index')->withSuccess('You have successfully purchased new magazine, charge #' . $transaction->stripe_charge_id);
+            return redirect()->route('my-account.index')->withSuccess('You have successfully purchased magazine, charge #' . $transaction->stripe_charge_id);
 
         }
         return redirect()->route('my-account.index')->withError('Something went wrong.');
@@ -300,6 +300,6 @@ class MagazineController extends Controller
     public function premiumAccessRemove(PremiumAccess $premiumAccess, Request $request)
     {
         $premiumAccess->delete();
-        return redirect()->back()->withSuccess('Premium user has successfully deleted to magazine');
+        return redirect()->back()->withSuccess('Premium user has successfully deleted from magazine');
     }
 }

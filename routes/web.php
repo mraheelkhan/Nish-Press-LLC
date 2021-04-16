@@ -21,11 +21,13 @@ Route::get('/', function () {
 });
 
 Auth::routes();
+Auth::routes(['verify' => true]);
 Route::get('/home', [HomeController::class, 'index'])->name('home');
 
 Route::middleware('auth')->group(function(){
     Route::resource('/home', HomeController::class);
     Route::get('/my-account', [HomeController::class, 'my_account'])->name('my-account.index');
+    Route::get('/transactions', [HomeController::class, 'transactions'])->name('account.all_transactions');
     Route::resource('magazines', MagazineController::class);
     Route::resource('users', UserController::class)->middleware('can:is_admin');
     Route::get('users/delete/{id}', [UserController::class, 'delete'])->middleware('can:is_admin')->name('users.delete');
