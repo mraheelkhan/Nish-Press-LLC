@@ -21,7 +21,6 @@ Route::get('/', function () {
 });
 
 Auth::routes();
-Auth::routes(['verify' => true]);
 Route::get('/home', [HomeController::class, 'index'])->name('home');
 
 Route::middleware('auth')->group(function(){
@@ -46,6 +45,6 @@ Route::middleware('auth')->group(function(){
 
 Route::prefix('front')->group(function(){
     Route::get('/', [FrontController::class, 'index'])->name('front.index');
-    Route::get('/{magazine}/{title}', [FrontController::class, 'show'])->middleware(['auth', 'verified'])->name('front.magazine.show');
+    Route::get('/{magazine}/{title}', [FrontController::class, 'show'])->middleware(['auth'])->name('front.magazine.show');
 });
 
